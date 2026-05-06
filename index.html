@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>John's Bistro – Belfast</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+
+  <style>
+    /* ===== CSS VARIABLES ===== */
+    :root {
+      --cream:    #faf6ef;
+      --dark:     #1a1a18;
+      --gold:     #c8982a;
+      --gold-lt:  #e8b84b;
+      --red:      #9b2335;
+      --grey:     #6b6b6b;
+      --light-bg: #f2ede3;
+      --white:    #ffffff;
+      --font-heading: 'Playfair Display', serif;
+      --font-body:    'Lato', sans-serif;
+      --transition: 0.3s ease;
+    }
+
+    /* ===== ACCESSIBILITY: TEXT RESIZE BUTTONS ===== */
+    #text-resize-bar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      background: var(--dark);
+      color: #ccc;
+      font-family: var(--font-body);
+      font-size: 12px;
+      padding: 4px 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 9999;
+    }
+    #text-resize-bar span { color: #999; }
+    #text-resize-bar button {
+      background: var(--gold);
+      color: var(--dark);
+      border: none;
+      padding: 2px 10px;
+      cursor: pointer;
+      font-weight: 700;
+      border-radius: 3px;
+      font-size: 13px;
+      transition: background var(--transition);
+    }
+    #text-resize-bar button:hover { background: var(--gold-lt); }
+
+    /* ===== RESET & BASE ===== */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      background: var(--cream);
+      color: var(--dark);
+      padding-top: 28px; /* space for accessibility bar */
+    }
+    img { max-width: 100%; display: block; }
+    a { text-decoration: none; color: inherit; }
+
+    /* ===== NAVIGATION BAR ===== */
+    #navbar {
+      position: sticky;
+      top: 28px;
+      z-index: 1000;
+      background: var(--dark);
+      padding: 0 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+    }
+    #navbar .logo {
+      font-family: var(--font-heading);
+      font-size: 1.6rem;
+      color: var(--gold);
+      font-weight: 900;
+      padding: 14px 0;
+      letter-spacing: 1px;
+    }
+    #navbar .logo span { color: var(--white); font-weight: 400; }
+    #nav-links {
+      display: flex;
+      list-style: none;
+      gap: 4px;
+    }
+    #nav-links li a {
+      display: block;
+      color: #ccc;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      padding: 20px 14px;
+      transition: color var(--transition), background var(--transition);
+    }
+    #nav-links li a:hover,
+    #nav-links li a.active {
+      color: var(--gold);
+      background: rgba(200,152,42,0.08);
+    }
+    /* Hamburger (mobile) */
+    #hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 10px 0;
+    }
+    #hamburger span {
+      display: block;
+      width: 26px; height: 2px;
+      background: var(--gold);
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+
+    /* ===== PAGE SECTIONS (single-page multi-section) ===== */
+    .page-section {
+      display: none;
+      animation: fadeInPage 0.5s ease forwards;
+    }
+    .page-section.active { display: block; }
+
+    @keyframes fadeInPage {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ===== HERO ===== */
+    #hero {
+      position: relative;
+      min-height: 92vh;
+      background: linear-gradient(135deg, #1a1208 0%, #2e1f07 50%, #1a1208 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    #hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 20% 50%, rgba(200,152,42,0.15) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 20%, rgba(155,35,53,0.12) 0%, transparent 50%);
+    }
+    /* Animated floating circles */
+    .hero-orb {
+      position: absolute;
+      border-radius: 50%;
+      animation: floatOrb 6s ease-in-out infinite;
+      opacity: 0.06;
+      background: var(--gold);
+    }
+    .hero-orb:nth-child(1) { width:400px; height:400px; top:-100px; left:-100px; animation-delay:0s; }
+    .hero-orb:nth-child(2) { width:300px; height:300px; bottom:-80px; right:-60px; animation-delay:2s; background:var(--red); }
+    .hero-orb:nth-child(3) { width:200px; height:200px; top:40%; left:60%; animation-delay:4s; }
+
+    @keyframes floatOrb {
+      0%,100% { transform: translateY(0) scale(1); }
+      50%      { transform: translateY(-30px) scale(1.05); }
+    }
+
+    .hero-content {
+      position: relative;
+      text-align: center;
+      padding: 40px 20px;
+      animation: heroReveal 1.2s ease forwards;
+    }
+    @keyframes heroReveal {
+      from { opacity:0; transform: translateY(40px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+    .hero-content .tagline {
+      font-family: var(--font-body);
+      color: var(--gold);
+      letter-spacing: 4px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .hero-content h1 {
+      font-family: var(--font-heading);
+      color: var(--white);
+      font-size: clamp(3rem, 8vw, 6rem);
+      font-weight: 900;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+    .hero-content h1 span { color: var(--gold); }
+    .hero-content .sub {
+      color: #b0a090;
+      font-size: 1.1rem;
+      margin-bottom: 10px;
+    }
+    .hero-divider {
+      width: 60px; height: 2px;
+      background: var(--gold);
+      margin: 20px auto;
+    }
+    .hero-content p {
+      color: #c0b090;
+      font-size: 1rem;
+      max-width: 480px;
+      margin: 0 auto 36px;
+      line-height: 1.7;
+    }
+    .hero-btns { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-block;
+      padding: 14px 34px;
+      font-family: var(--font-body);
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+    .btn-primary {
+      background: var(--gold);
+      color: var(--dark);
+      border: 2px solid var(--gold);
+    }
+    .btn-primary:hover {
+      background: var(--gold-lt);
+      border-color: var(--gold-lt);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(200,152,42,0.35);
+    }
+    .btn-outline {
+      background: transparent;
+      color: var(--white);
+      border: 2px solid rgba(255,255,255,0.4);
+    }
+    .btn-outline:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      transform: translateY(-2px);
+    }
+
+    /* Scroll indicator */
+    .scroll-hint {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      color: #888;
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      animation: bounce 2s ease infinite;
+    }
+    .scroll-hint::after {
+      content: '';
+      width: 1px; height: 40px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+    }
+    @keyframes bounce {
+      0%,100%{ transform: translateX(-50%) translateY(0); }
+      50%    { transform: translateX(-50%) translateY(8px); }
+    }
+
+    /* ===== SECTION WRAPPER ===== */
+    .section-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 80px 24px;
+    }
+    .section-header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+    .section-header .eyebrow {
+      font-size: 0.75rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .section-header h2 {
+      font-family: var(--font-heading);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 900;
+      color: var(--dark);
+    }
+    .section-header p {
+      color: var(--grey);
+      margin-top: 14px;
+      font-size: 1rem;
+      max-width: 560px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.7;
+    }
+    .gold-line {
+      width: 50px; height: 3px;
+      background: var(--gold);
+      margin: 16px auto 0;
+    }
+
+    /* ===== PAGE: HOME – FEATURES STRIP ===== */
+    .features-strip {
+      background: var(--dark);
+      padding: 50px 24px;
+    }
+    .features-grid {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 30px;
+    }
+    .feature-card {
+      text-align: center;
+      padding: 30px 20px;
+      border: 1px solid rgba(200,152,42,0.15);
+      border-radius: 4px;
+      transition: border-color var(--transition), transform var(--transition);
+    }
+    .feature-card:hover {
+      border-color: var(--gold);
+      transform: translateY(-4px);
+    }
+    .feature-card .icon { font-size: 2.2rem; margin-bottom: 14px; }
+    .feature-card h3 {
+      font-family: var(--font-heading);
+      color: var(--gold);
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+    }
+    .feature-card p { color: #999; font-size: 0.9rem; line-height: 1.6; }
+
+    /* ===== HOME – ABOUT TEASER ===== */
+    .home-about {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+      padding: 80px 24px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .about-img-placeholder {
+      aspect-ratio: 4/3;
+      background: linear-gradient(135deg, #2a1f10 0%, #3d2b12 60%, #1a1208 100%);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .about-img-placeholder::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 20px,
+        rgba(200,152,42,0.04) 20px,
+        rgba(200,152,42,0.04) 21px
+      );
+    }
+    .about-text .eyebrow { color: var(--gold); letter-spacing: 3px; font-size: 0.75rem; text-transform: uppercase; font-weight: 700; }
+    .about-text h2 { font-family: var(--font-heading); font-size: 2.2rem; font-weight: 900; margin: 10px 0 18px; }
+    .about-text p { color: var(--grey); line-height: 1.8; margin-bottom: 14px; }
+
+    /* ===== PAGE: MENU ===== */
+    .menu-bg { background: var(--light-bg); }
+    .menu-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 40px;
+    }
+    .menu-tab {
+      padding: 10px 24px;
+      font-family: var(--font-body);
+      font-weight: 700;
+      font-size: 0.8rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      background: transparent;
+      border: 2px solid rgba(26,26,24,0.15);
+      color: var(--grey);
+      cursor: pointer;
+      border-radius: 3px;
+      transition: all var(--transition);
+    }
+    .menu-tab.active, .menu-tab:hover {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: var(--dark);
+    }
+    .menu-category { display: none; }
+    .menu-category.active { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
+    .menu-item {
+      background: var(--white);
+      border-radius: 4px;
+      padding: 24px;
+      border-left: 4px solid var(--gold);
+      transition: transform var(--transition), box-shadow var(--transition);
+    }
+    .menu-item:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+    .menu-item-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .menu-item h3 { font-family: var(--font-heading); font-size: 1.1rem; font-weight: 700; flex: 1; }
+    .menu-item .price { font-weight: 700; color: var(--gold); font-size: 1rem; white-space: nowrap; margin-left: 10px; }
+    .menu-item p { color: var(--grey); font-size: 0.88rem; line-height: 1.6; }
+    .menu-item .dietary { margin-top: 8px; font-size: 0.75rem; color: var(--red); font-weight: 700; letter-spacing: 0.5px; }
+
+    /* ===== PAGE: ABOUT ===== */
+    .story-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+    .story-img {
+      aspect-ratio: 3/4;
+      background: linear-gradient(160deg, #2a1a08, #3d2b12);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 5rem;
+      border: 3px solid rgba(200,152,42,0.2);
+    }
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 28px;
+      margin-top: 50px;
+    }
+    .team-card {
+      text-align: center;
+      padding: 30px 20px;
+      background: var(--white);
+      border-radius: 4px;
+      border-top: 4px solid var(--gold);
+      transition: transform var(--transition);
+    }
+    .team-card:hover { transform: translateY(-4px); }
+    .team-card .avatar {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--gold), var(--red));
+      margin: 0 auto 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+    }
+    .team-card h3 { font-family: var(--font-heading); font-size: 1.1rem; margin-bottom: 4px; }
+    .team-card .role { font-size: 0.8rem; color: var(--gold); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+    .team-card p { color: var(--grey); font-size: 0.87rem; line-height: 1.6; }
+
+    /* ===== PAGE: GALLERY ===== */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-auto-rows: 220px;
+      gap: 14px;
+    }
+    .gallery-item {
+      border-radius: 2px;
+      overflow: visible;
+      position: relative;
+      cursor: pointer;
+      background: #ddd;
+      /* cut-and-paste effect: slight random rotation, drop shadow, white border */
+      box-shadow: 4px 6px 18px rgba(0,0,0,0.35), 0 0 0 6px white, 4px 8px 20px rgba(0,0,0,0.25);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .gallery-item:nth-child(odd)  { transform: rotate(-1.2deg); }
+    .gallery-item:nth-child(even) { transform: rotate(0.8deg); }
+    .gallery-item:nth-child(3)    { transform: rotate(-2deg); }
+    .gallery-item:nth-child(5)    { transform: rotate(1.5deg); }
+    .gallery-item:nth-child(7)    { transform: rotate(-0.5deg); }
+    .gallery-item:hover {
+      transform: rotate(0deg) scale(1.04) !important;
+      box-shadow: 8px 14px 30px rgba(0,0,0,0.4), 0 0 0 6px white, 8px 16px 32px rgba(0,0,0,0.3);
+      z-index: 10;
+    }
+    .gallery-item:nth-child(1) { grid-column: span 2; grid-row: span 2; }
+    .gallery-item:nth-child(4) { grid-column: span 2; }
+    .gallery-item .gallery-bg {
+      width: 100%; height: 100%;
+      background-size: cover;
+      background-position: center;
+      transition: transform 0.4s ease;
+    }
+    .gallery-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 55%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      display: flex;
+      align-items: flex-end;
+      padding: 14px;
+    }
+    .gallery-item:hover .gallery-overlay { opacity: 1; }
+    .gallery-overlay span {
+      color: white;
+      font-family: var(--font-heading);
+      font-size: 1rem;
+      font-weight: 700;
+      text-shadow: 0 1px 4px rgba(0,0,0,0.6);
+    }
+
+    /* Lightbox */
+    #lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      z-index: 9998;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+    }
+    #lightbox.open { display: flex; animation: fadeInPage 0.3s ease; }
+    #lightbox img {
+      max-width: 90vw;
+      max-height: 80vh;
+      border-radius: 2px;
+      box-shadow: 0 0 0 8px white, 0 20px 60px rgba(0,0,0,0.7);
+    }
+    #lightbox p { color: white; font-family: var(--font-heading); font-size: 1.2rem; margin-top: 8px; }
+    #lightbox-close {
+      position: absolute; top: 30px; right: 40px;
+      color: white; font-size: 2rem; cursor: pointer;
+      background: none; border: none;
+      transition: color var(--transition);
+    }
+    #lightbox-close:hover { color: var(--gold); }
+
+    /* ===== PAGE: RESERVATIONS ===== */
+    .res-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 60px;
+    }
+    .res-info h3 { font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 16px; }
+    .res-info p { color: var(--grey); line-height: 1.8; margin-bottom: 20px; }
+    .hours-table { width: 100%; border-collapse: collapse; }
+    .hours-table td {
+      padding: 8px 0;
+      font-size: 0.9rem;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      color: var(--grey);
+    }
+    .hours-table td:first-child { font-weight: 700; color: var(--dark); }
+    .form-card {
+      background: var(--white);
+      padding: 40px;
+      border-radius: 6px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+    }
+    .form-card h3 { font-family: var(--font-heading); font-size: 1.5rem; margin-bottom: 24px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: var(--dark);
+      margin-bottom: 6px;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1.5px solid #ddd;
+      border-radius: 3px;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      color: var(--dark);
+      background: var(--cream);
+      transition: border-color var(--transition);
+      outline: none;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus { border-color: var(--gold); }
+    .form-group textarea { resize: vertical; min-height: 90px; }
+    #res-msg {
+      display: none;
+      margin-top: 16px;
+      padding: 14px 20px;
+      background: #eef7ee;
+      border-left: 4px solid #4caf50;
+      color: #2e7d32;
+      font-size: 0.9rem;
+      border-radius: 3px;
+      animation: fadeInPage 0.4s ease;
+    }
+
+    /* ===== PAGE: CONTACT ===== */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+    }
+    .contact-block { margin-bottom: 28px; }
+    .contact-block h4 { font-family: var(--font-heading); font-size: 1.1rem; margin-bottom: 8px; color: var(--gold); }
+    .contact-block p { color: var(--grey); line-height: 1.7; font-size: 0.95rem; }
+    .contact-block a { color: var(--red); }
+    .contact-block a:hover { text-decoration: underline; }
+    .map-placeholder {
+      aspect-ratio: 4/3;
+      background: linear-gradient(135deg, #e8e0d0 0%, #d0c8b8 100%);
+      border-radius: 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-size: 3rem;
+      border: 2px solid #ccc;
+    }
+    .map-placeholder p { font-size: 0.9rem; color: #888; font-family: var(--font-body); }
+
+    /* ===== PAGE: SPECIALS ===== */
+    .specials-hero {
+      background: linear-gradient(135deg, var(--dark) 0%, #2a1a08 100%);
+      padding: 70px 24px;
+      text-align: center;
+    }
+    .specials-hero h2 {
+      font-family: var(--font-heading);
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      color: var(--gold);
+      font-weight: 900;
+      margin-bottom: 10px;
+    }
+    .specials-hero p { color: #aaa; font-size: 1rem; max-width: 500px; margin: 0 auto; }
+    .specials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 24px;
+    }
+    .special-card {
+      background: var(--white);
+      border-radius: 6px;
+      overflow: hidden;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+      transition: transform var(--transition), box-shadow var(--transition);
+    }
+    .special-card:hover { transform: translateY(-5px); box-shadow: 0 12px 30px rgba(0,0,0,0.12); }
+    .special-img {
+      height: 180px;
+      background: linear-gradient(135deg, #2a1a08, #4a2f10);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+    }
+    .special-body { padding: 22px; }
+    .special-body .badge {
+      display: inline-block;
+      background: var(--red);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      border-radius: 2px;
+      margin-bottom: 10px;
+    }
+    .special-body h3 { font-family: var(--font-heading); font-size: 1.2rem; margin-bottom: 8px; }
+    .special-body p { color: var(--grey); font-size: 0.88rem; line-height: 1.6; margin-bottom: 14px; }
+    .special-body .sp-price { font-weight: 700; color: var(--gold); font-size: 1.1rem; }
+
+    /* ===== PAGE: EVENTS ===== */
+    .events-list { display: flex; flex-direction: column; gap: 24px; }
+    .event-card {
+      display: grid;
+      grid-template-columns: 100px 1fr;
+      gap: 24px;
+      background: var(--white);
+      border-radius: 6px;
+      padding: 28px;
+      border: 1px solid rgba(0,0,0,0.06);
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .event-card:hover { border-color: var(--gold); box-shadow: 0 6px 20px rgba(0,0,0,0.08); }
+    .event-date {
+      text-align: center;
+      background: var(--dark);
+      border-radius: 4px;
+      padding: 16px 10px;
+      color: var(--white);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .event-date .day { font-family: var(--font-heading); font-size: 2rem; font-weight: 900; color: var(--gold); line-height: 1; }
+    .event-date .month { font-size: 0.75rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; }
+    .event-info h3 { font-family: var(--font-heading); font-size: 1.3rem; margin-bottom: 8px; }
+    .event-info .ev-meta { font-size: 0.82rem; color: var(--gold); font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px; }
+    .event-info p { color: var(--grey); font-size: 0.9rem; line-height: 1.65; }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: var(--dark);
+      color: #888;
+      padding: 60px 24px 30px;
+    }
+    .footer-grid {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr 1fr;
+      gap: 40px;
+      padding-bottom: 40px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      margin-bottom: 30px;
+    }
+    footer .foot-logo {
+      font-family: var(--font-heading);
+      font-size: 1.6rem;
+      color: var(--gold);
+      font-weight: 900;
+      margin-bottom: 14px;
+    }
+    footer .foot-logo span { color: white; font-weight: 400; }
+    footer p { font-size: 0.87rem; line-height: 1.7; }
+    footer h4 {
+      font-family: var(--font-heading);
+      color: var(--white);
+      font-size: 1rem;
+      margin-bottom: 14px;
+    }
+    footer ul { list-style: none; }
+    footer ul li { margin-bottom: 8px; }
+    footer ul li a {
+      color: #888;
+      font-size: 0.87rem;
+      transition: color var(--transition);
+      cursor: pointer;
+    }
+    footer ul li a:hover { color: var(--gold); }
+    .footer-bottom {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-size: 0.82rem;
+    }
+    .socials { display: flex; gap: 12px; }
+    .socials a {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      transition: border-color var(--transition), background var(--transition);
+      color: #888;
+    }
+    .socials a:hover { border-color: var(--gold); background: rgba(200,152,42,0.1); color: var(--gold); }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 860px) {
+      #nav-links { display: none; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: var(--dark); padding: 10px 0; }
+      #nav-links.open { display: flex; }
+      #nav-links li a { padding: 14px 24px; }
+      #hamburger { display: flex; }
+      #navbar { position: relative; }
+
+      .story-grid, .contact-grid, .res-wrapper, .home-about { grid-template-columns: 1fr; }
+      .gallery-grid { grid-template-columns: 1fr 1fr; }
+      .gallery-item:nth-child(1) { grid-column: span 2; grid-row: span 1; }
+      .gallery-item:nth-child(4) { grid-column: span 1; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .event-card { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 560px) {
+      .footer-grid { grid-template-columns: 1fr; }
+      .gallery-grid { grid-template-columns: 1fr; }
+      .gallery-item:nth-child(1), .gallery-item:nth-child(4) { grid-column: span 1; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ACCESSIBILITY: TEXT RESIZE BAR (JavaScript) -->
+<div id="text-resize-bar">
+  <span>Accessibility:</span>
+  <button onclick="changeTextSize(1)" aria-label="Increase text size">A+</button>
+  <button onclick="changeTextSize(-1)" aria-label="Decrease text size">A−</button>
+  <button onclick="changeTextSize(0)" aria-label="Reset text size">Reset</button>
+  <span id="size-label" style="color:#666;">Text size: Normal</span>
+</div>
+
+<!-- NAVIGATION BAR -->
+<nav id="navbar" role="navigation" aria-label="Main navigation">
+  <div class="logo">John's <span>Bistro</span></div>
+  <ul id="nav-links">
+    <li><a href="#" class="nav-link active" data-page="home">Home</a></li>
+    <li><a href="#" class="nav-link" data-page="menu">Menu</a></li>
+    <li><a href="#" class="nav-link" data-page="specials">Specials</a></li>
+    <li><a href="#" class="nav-link" data-page="about">About</a></li>
+    <li><a href="#" class="nav-link" data-page="gallery">Gallery</a></li>
+    <li><a href="#" class="nav-link" data-page="events">Events</a></li>
+    <li><a href="#" class="nav-link" data-page="reservations">Reservations</a></li>
+    <li><a href="#" class="nav-link" data-page="contact">Contact</a></li>
+  </ul>
+  <div id="hamburger" onclick="toggleMenu()" aria-label="Toggle navigation menu" role="button" tabindex="0">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- ========== PAGE 1: HOME ========== -->
+<section id="page-home" class="page-section active">
+
+  <!-- Hero -->
+  <div id="hero">
+    <div class="hero-orb"></div>
+    <div class="hero-orb"></div>
+    <div class="hero-orb"></div>
+    <div class="hero-content">
+      <div class="tagline">Great Food, Good Vibes, Belfast</div>
+      <h1>John's <span>Bistro</span></h1>
+      <div class="sub">Lisburn Road, Belfast</div>
+      <div class="hero-divider"></div>
+      <p>Fresh, tasty food made with local ingredients. A relaxed and welcoming spot right on the Lisburn Road.</p>
+      <div class="hero-btns">
+        <a href="#" class="btn btn-primary nav-link" data-page="reservations">Book a Table</a>
+        <a href="#" class="btn btn-outline nav-link" data-page="menu">View Menu</a>
+      </div>
+    </div>
+    <div class="scroll-hint">Scroll</div>
+  </div>
+
+  <!-- Features Strip -->
+  <div class="features-strip">
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="icon">🍽️</div>
+        <h3>Great Food</h3>
+        <p>Freshly prepared dishes using quality local ingredients, made from scratch every day by our kitchen team.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">🌿</div>
+        <h3>Locally Sourced</h3>
+        <p>All ingredients sourced from trusted local farms and suppliers across Northern Ireland.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">🍷</div>
+        <h3>Curated Wine List</h3>
+        <p>Over 80 hand-selected wines from across Europe, perfectly matched to our menu.</p>
+      </div>
+      <div class="feature-card">
+        <div class="icon">⭐</div>
+        <h3>Award Winning</h3>
+        <p>Named Best Bistro in Belfast 2023 by the Northern Ireland Food &amp; Drink Awards.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- About Teaser -->
+  <div class="home-about">
+    <div class="about-img-placeholder" role="img" aria-label="Interior of John's Bistro dining room">
+      🏛️
+    </div>
+    <div class="about-text">
+      <div class="eyebrow">Our Story</div>
+      <h2>A Belfast Favourite Since 2009</h2>
+      <p>Founded by chef John O'Barra, our bistro has been feeding the people of Belfast for over fifteen years. What started as a small neighbourhood restaurant has become one of the most popular spots on the Lisburn Road.</p>
+      <p>We believe great food brings people together. Whether you're out for a meal with friends or grabbing lunch, John's Bistro is the place to be.</p>
+      <a href="#" class="btn btn-primary nav-link" data-page="about" style="margin-top:10px;">Our Story</a>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========== PAGE 2: MENU ========== -->
+<section id="page-menu" class="page-section">
+  <div class="menu-bg">
+    <div class="section-wrap">
+      <div class="section-header">
+        <div class="eyebrow">Eat Well</div>
+        <h2>Our Menu</h2>
+        <p>Fresh, seasonal food made with local ingredients. Something for everyone.</p>
+        <div class="gold-line"></div>
+      </div>
+
+      <div class="menu-tabs" role="tablist">
+        <button class="menu-tab active" onclick="switchTab(this,'starters')" role="tab" aria-selected="true">Starters</button>
+        <button class="menu-tab" onclick="switchTab(this,'mains')" role="tab" aria-selected="false">Mains</button>
+        <button class="menu-tab" onclick="switchTab(this,'desserts')" role="tab" aria-selected="false">Desserts</button>
+        <button class="menu-tab" onclick="switchTab(this,'drinks')" role="tab" aria-selected="false">Drinks</button>
+      </div>
+
+      <!-- Starters -->
+      <div id="cat-starters" class="menu-category active">
+        <div class="menu-item"><div class="menu-item-header"><h3>Soup of the Day</h3><span class="price">£6</span></div><p>Ask your server for today's soup. Served with wheaten bread.</p><div class="dietary">V · G · D</div></div>
+        <div class="menu-item"><div class="menu-item-header"><h3>John's Seafood Chowder</h3><span class="price">£9</span></div><p>Wheaten Bread, Herbs &amp; Croutons.</p><div class="dietary">G · F · D · C</div></div>
+        <div class="menu-item"><div class="menu-item-header"><h3>Salt &amp; Chilli Squid</h3><span class="price">£11</span></div><p>Napa Slaw, Chilli Jam &amp; Mayo.</p><div class="dietary">E · D · M</div></div>
+        <div class="menu-item"><div class="menu-item-header"><h3>Peel &amp; Eat Langoustines</h3><span class="price">£13</span></div><p>Served Chilled, Lemon Mayo &amp; Side Salad.</p><div class="dietary">CR · E · MD</div></div>
+        <div class="menu-item"><div class="menu-item-header"><h3>Dundrum Mussels</h3><span class="price">£12</span></div><p>White Wine &amp; Shallot Cream with Crusty Bread. Or have as a main with fries for £21.</p><div class="dietary">G · D · M</div></div>
+      </div>
+
+      <!-- Mains -->
+      <div id="cat-mains" class="menu-category">
+        <div class="menu-item"><div class="menu-item-header"><h3>Fish &amp; Chips</h3><span class="price">£16</span></div><p>Beer-battered fillet of cod, chunky chips, mushy peas, and tartare sauce.</p><div class="dietary">G · F</div></div>
+        <div class="menu-item"><div class="menu-item-header"><h3>Grilled Salmon</h3><span class="price">£18</span></div><p>Fillet of salmon, new potatoes, green beans, and lemon butter sauce.</p><div class="dietary">F · D</div></div>
+        <div class="menu-item"><div class="menu-item-header"><h3>Beef Burger</h3><span class="price">£14</span></div><p>6oz beef patty, brioche bun, lettuce, tomato, cheese, and fries on the side.</p><div class="dietary">G · D · E</div></div>
+        <div class="menu-item"><div class="menu-item-header"><h3>Chicken &amp; Chips</h3><span class="price">£15</span></div><p>Grilled chicken breast, chunky chips, coleslaw, and a side salad.</p></div>
+        <div class="menu-item"><div class="menu-item-header"><h3>Dundrum Mussels (Main)</h3><span class="price">£21</span></div><p>White Wine &amp; Shallot Cream with Crusty Bread and fries.</p><div class="dietary">G · D · M</div></div>
+        <div class="menu-item"><div class="menu-item-header"><h3>Veggie Pasta</h3><span class="price">£13</span></div><p>Penne pasta with roasted vegetables, tomato sauce, and shaved Parmesan.</p><div class="dietary">V · G · D</div></div>
+      </div>
+
+      <!-- Desserts -->
+      <div id="cat-desserts" class="menu-category">
+        <div class="menu-item"><div class="menu-item-header"><h3>Sticky Toffee Pudding</h3><span class="price">£7</span></div><p>Traditional sticky toffee pudding with butterscotch sauce and vanilla ice cream.</p><div class="dietary">V · G · D</div></div>
+        <div class="menu-item"><div class="menu-item-header"><h3>Chocolate Brownie</h3><span class="price">£6.50</span></div><p>Warm chocolate brownie with a scoop of vanilla ice cream.</p><div class="dietary">V · G · D</div></div>
+        <div class="menu-item"><div class="menu-item-header"><h3>Ice Cream</h3><span class="price">£5</span></div><p>Three scoops of vanilla, chocolate, or strawberry ice cream.</p><div class="dietary">V · GF · D</div></div>
+        <div class="menu-item"><div class="menu-item-header"><h3>Cheesecake of the Day</h3><span class="price">£7</span></div><p>Ask your server for today's cheesecake flavour. Served with cream.</p><div class="dietary">V · G · D</div></div>
+      </div>
+
+      <!-- Drinks -->
+      <div id="cat-drinks" class="menu-category">
+        <div class="menu-item"><div class="menu-item-header"><h3>Soft Drinks</h3><span class="price">£2.80</span></div><p>Coke, Diet Coke, Sprite, Fanta, or sparkling water.</p></div>
+        <div class="menu-item"><div class="menu-item-header"><h3>Craft Beers</h3><span class="price">£5</span></div><p>Selection of local Northern Irish craft beers. Ask your server what's on today.</p></div>
+        <div class="menu-item"><div class="menu-item-header"><h3>House Wine (Glass)</h3><span class="price">£6</span></div><p>Red, white, or rosé. Ask your server for the current options.</p></div>
+        <div class="menu-item"><div class="menu-item-header"><h3>Hot Drinks</h3><span class="price">£2.80</span></div><p>Tea, coffee, hot chocolate, or a latte.</p></div>
+      </div>
+
+      <p style="text-align:center;margin-top:30px;font-size:0.82rem;color:#999;">G = Gluten &nbsp;|&nbsp; F = Fish &nbsp;|&nbsp; D = Dairy &nbsp;|&nbsp; C = Celery &nbsp;|&nbsp; E = Eggs &nbsp;|&nbsp; M = Molluscs &nbsp;|&nbsp; CR = Crustaceans &nbsp;|&nbsp; V = Vegetarian &nbsp;|&nbsp; VG = Vegan &nbsp;|&nbsp; Please inform your server of any allergies.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ========== PAGE 3: SPECIALS ========== -->
+<section id="page-specials" class="page-section">
+  <div class="specials-hero">
+    <div class="eyebrow" style="color:var(--gold-lt);letter-spacing:4px;font-size:.75rem;text-transform:uppercase;font-weight:700;margin-bottom:10px;">Limited Time Only</div>
+    <h2>This Week's Specials</h2>
+    <p>Seasonal highlights and chef's inspirations, available for a limited time only.</p>
+  </div>
+  <div class="section-wrap">
+    <div class="specials-grid">
+      <div class="special-card">
+        <div class="special-img" role="img" aria-label="John's Lobster dish">🦞</div>
+        <div class="special-body">
+          <span class="badge">Chef's Pick</span>
+          <h3>John's Lobster</h3>
+          <p>Half a native lobster baked with a rich cream and Dijon mustard sauce, finished with Gruyère and fresh tarragon. Served with hand-cut chips and dressed salad.</p>
+          <div class="sp-price">£38.00</div>
+        </div>
+      </div>
+      <div class="special-card">
+        <div class="special-img" role="img" aria-label="Pavlova dessert">🍓</div>
+        <div class="special-body">
+          <span class="badge">Dessert Special</span>
+          <h3>Pavlova</h3>
+          <p>Crisp meringue topped with vanilla Chantilly cream, fresh strawberries, raspberries, and passion fruit coulis.</p>
+          <div class="sp-price">£9.00</div>
+        </div>
+      </div>
+      <div class="special-card">
+        <div class="special-img" role="img" aria-label="Sunday roast">🍖</div>
+        <div class="special-body">
+          <span class="badge">Sunday Only</span>
+          <h3>Sunday Roast</h3>
+          <p>Traditional roast sirloin of beef with Yorkshire pudding, roasted seasonal vegetables, honey-glazed parsnips, and rich gravy.</p>
+          <div class="sp-price">£23.00</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== PAGE 4: ABOUT ========== -->
+<section id="page-about" class="page-section">
+  <div class="section-wrap">
+    <div class="section-header">
+      <div class="eyebrow">Who We Are</div>
+      <h2>Our Story</h2>
+      <div class="gold-line"></div>
+    </div>
+    <div class="story-grid">
+      <div>
+        <img src="barra_photo.jpg" alt="John O'Barra as a young chef early in his career" style="width:100%;border-radius:4px;border:6px solid white;box-shadow:4px 8px 24px rgba(0,0,0,0.25);display:block;"/>
+        <p style="text-align:center;font-size:0.8rem;color:#aaa;margin-top:10px;font-style:italic;">John O'Barra, early in his career as a chef</p>
+      </div>
+      <div>
+        <h3 style="font-family:var(--font-heading);font-size:1.8rem;margin-bottom:18px;">From Passion to Plate</h3>
+        <p style="color:var(--grey);line-height:1.85;margin-bottom:14px;">John O'Barra grew up in a small fishing village in County Down, where food was always at the heart of family life. After training at La Salle Cookery School, John left with a simple dream: to open a restaurant that served honest, tasty food using the best local ingredients.</p>
+        <p style="color:var(--grey);line-height:1.85;margin-bottom:14px;">John's Bistro opened its doors in 2009 on the Lisburn Road. From day one, the idea has been simple — good food, good service, and a place where everyone feels welcome.</p>
+        <p style="color:var(--grey);line-height:1.85;">Today, the bistro is a well-known spot on the Lisburn Road and employs a team of fifteen people, many of whom have been with John from the start. It remains a family-run restaurant with strong ties to the local community.</p>
+      </div>
+    </div>
+
+    <div class="section-header" style="margin-top:70px;">
+      <div class="eyebrow">The People</div>
+      <h2>Meet the Team</h2>
+      <div class="gold-line"></div>
+    </div>
+    <div class="team-grid">
+      <div class="team-card">
+        <div class="avatar" role="img" aria-label="John O'Barra">👨‍🍳</div>
+        <h3>John O'Barra</h3>
+        <div class="role">Head Chef &amp; Founder</div>
+        <p>Over 25 years of cooking experience. John's love of fresh, local ingredients is at the heart of everything on the menu.</p>
+      </div>
+      <div class="team-card">
+        <div class="avatar" role="img" aria-label="Sarah McKenna">👩‍🍳</div>
+        <h3>Sarah McKenna</h3>
+        <div class="role">Sous Chef</div>
+        <p>A La Salle Cookery School graduate and Belfast native, Sarah brings creativity and precision to the kitchen every single day.</p>
+      </div>
+      <div class="team-card">
+        <div class="avatar" role="img" aria-label="Michael Doherty">🍷</div>
+        <h3>Michael Doherty</h3>
+        <div class="role">Sommelier</div>
+        <p>Our sommelier has a genuine love of wine. Michael curates our list and guides guests to perfect pairings.</p>
+      </div>
+      <div class="team-card">
+        <div class="avatar" role="img" aria-label="Aoife Clarke">🌟</div>
+        <h3>Aoife Clarke</h3>
+        <div class="role">Front of House Manager</div>
+        <p>Aoife has been with John's Bistro since 2012. Her warm welcome and attention to detail make every guest feel at home.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== PAGE 5: GALLERY ========== -->
+<section id="page-gallery" class="page-section">
+  <div class="section-wrap">
+    <div class="section-header">
+      <div class="eyebrow">Visual Tour</div>
+      <h2>Gallery</h2>
+      <p>Take a look inside John's Bistro — our dishes, our dining room, and the moments that make us who we are.</p>
+      <div class="gold-line"></div>
+    </div>
+
+    <div class="gallery-grid">
+      <div class="gallery-item" onclick="openLightbox('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200','The Dining Room')" role="button" aria-label="View dining room photo" tabindex="0">
+        <div class="gallery-bg" style="background-image:url('https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800');background-size:cover;background-position:center;"></div>
+        <div class="gallery-overlay"><span>The Dining Room</span></div>
+      </div>
+      <div class="gallery-item" onclick="openLightbox('https://images.unsplash.com/photo-1547592180-85f173990554?w=1200','Healthy Options')" role="button" aria-label="View healthy options photo" tabindex="0">
+        <div class="gallery-bg" style="background-image:url('https://images.unsplash.com/photo-1547592180-85f173990554?w=800');background-size:cover;background-position:center;"></div>
+        <div class="gallery-overlay"><span>Healthy Options</span></div>
+      </div>
+      <div class="gallery-item" onclick="openLightbox('https://images.unsplash.com/photo-1600803907087-f56d462fd26b?w=1200','Good Food')" role="button" aria-label="View good food photo" tabindex="0">
+        <div class="gallery-bg" style="background-image:url('https://images.unsplash.com/photo-1600803907087-f56d462fd26b?w=800');background-size:cover;background-position:center;"></div>
+        <div class="gallery-overlay"><span>Good Food</span></div>
+      </div>
+      <div class="gallery-item" onclick="openLightbox('https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200','Chef at Work')" role="button" aria-label="View chef photo" tabindex="0">
+        <div class="gallery-bg" style="background-image:url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800');background-size:cover;background-position:center;"></div>
+        <div class="gallery-overlay"><span>Chef at Work</span></div>
+      </div>
+      <div class="gallery-item" onclick="openLightbox('https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?w=1200','Locally Sourced')" role="button" aria-label="View locally sourced photo" tabindex="0">
+        <div class="gallery-bg" style="background-image:url('https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?w=800');background-size:cover;background-position:center;"></div>
+        <div class="gallery-overlay"><span>Locally Sourced</span></div>
+      </div>
+      <div class="gallery-item" onclick="openLightbox('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=1200','Restaurant Interior')" role="button" aria-label="View restaurant interior photo" tabindex="0">
+        <div class="gallery-bg" style="background-image:url('https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800');background-size:cover;background-position:center;"></div>
+        <div class="gallery-overlay"><span>Inside John's</span></div>
+      </div>
+      <div class="gallery-item" onclick="openLightbox('https://images.unsplash.com/photo-1551024506-0bccd828d307?w=1200','Dessert')" role="button" aria-label="View dessert photo" tabindex="0">
+        <div class="gallery-bg" style="background-image:url('https://images.unsplash.com/photo-1551024506-0bccd828d307?w=800');background-size:cover;background-position:center;"></div>
+        <div class="gallery-overlay"><span>Desserts</span></div>
+      </div>
+      <div class="gallery-item" onclick="openLightbox('https://images.unsplash.com/photo-1510626176961-4b57d4fbad03?w=1200','Cocktails')" role="button" aria-label="View cocktails photo" tabindex="0">
+        <div class="gallery-bg" style="background-image:url('https://images.unsplash.com/photo-1510626176961-4b57d4fbad03?w=800');background-size:cover;background-position:center;"></div>
+        <div class="gallery-overlay"><span>Cocktails</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIGHTBOX (Interactive feature) -->
+  <div id="lightbox" role="dialog" aria-modal="true" aria-label="Image lightbox">
+    <button id="lightbox-close" onclick="closeLightbox()" aria-label="Close lightbox">✕</button>
+    <img id="lb-img" src="" alt="" style="max-width:90vw;max-height:80vh;border-radius:4px;box-shadow:0 20px 60px rgba(0,0,0,0.6);border:3px solid white;"/>
+    <p id="lb-caption"></p>
+  </div>
+</section>
+
+<!-- ========== PAGE 6: EVENTS ========== -->
+<section id="page-events" class="page-section">
+  <div class="section-wrap">
+    <div class="section-header">
+      <div class="eyebrow">What's On</div>
+      <h2>Upcoming Events</h2>
+      <p>Keep an eye out for special events happening at John's Bistro.</p>
+      <div class="gold-line"></div>
+    </div>
+    <div class="events-list">
+      <div class="event-card">
+        <div class="event-date"><div class="day">05</div><div class="month">Jul</div></div>
+        <div class="event-info">
+          <div class="ev-meta">🍽️ Tasting Menu · 6:30 PM · £85 per person</div>
+          <h3>Chef's Table: Summer Harvest</h3>
+          <p>An exclusive eight-course tasting menu showcasing the very best of the Northern Irish summer harvest. Chef John O'Barra will present each course personally, explaining the inspiration and sourcing behind every dish. Optional wine pairing available at £40.</p>
+        </div>
+      </div>
+      <div class="event-card">
+        <div class="event-date"><div class="day">03</div><div class="month">Aug</div></div>
+        <div class="event-info">
+          <div class="ev-meta">🎉 Celebration · From 6:00 PM · Private Hire</div>
+          <h3>Belfast Food Festival Dinner</h3>
+          <p>As part of this year's Belfast Food Festival, John's Bistro will be hosting a special collaborative dinner featuring guest chefs from three other celebrated Northern Irish restaurants. This is a ticketed event — contact us directly to reserve your place.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== PAGE 7: RESERVATIONS ========== -->
+<section id="page-reservations" class="page-section">
+  <div class="section-wrap">
+    <div class="section-header">
+      <div class="eyebrow">Join Us</div>
+      <h2>Make a Reservation</h2>
+      <p>We'd love to welcome you. Book your table online or give us a call. We recommend booking in advance, especially at weekends.</p>
+      <div class="gold-line"></div>
+    </div>
+    <div class="res-wrapper">
+      <div class="res-info">
+        <h3>Opening Hours</h3>
+        <p>We are open for lunch and dinner throughout the week. Walk-ins are welcome, but to avoid disappointment, please book ahead.</p>
+        <table class="hours-table" aria-label="Restaurant opening hours">
+          <tr><td>Monday</td><td>Closed</td></tr>
+          <tr><td>Tuesday – Thursday</td><td>12:00 – 2:30 PM &amp; 5:30 – 10:00 PM</td></tr>
+          <tr><td>Friday – Saturday</td><td>12:00 – 3:00 PM &amp; 5:30 – 11:00 PM</td></tr>
+          <tr><td>Sunday</td><td>12:00 – 4:00 PM (Sunday Roast)</td></tr>
+        </table>
+        <p style="margin-top:20px;font-size:0.85rem;color:var(--grey);">📞 Telephone: <a href="tel:+442890123456" style="color:var(--red);">028 9012 3456</a></p>
+        <p style="font-size:0.85rem;color:var(--grey);">✉️ Email: <a href="mailto:hello@johnsbistro.co.uk" style="color:var(--red);">hello@johnsbistro.co.uk</a></p>
+        <p style="margin-top:20px;font-size:0.82rem;color:#aaa;">For parties of 8 or more, or to enquire about private hire, please contact us directly by phone or email.</p>
+      </div>
+      <div class="form-card">
+        <h3>Book Your Table</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="res-name">Full Name</label>
+            <input type="text" id="res-name" placeholder="Your name" autocomplete="name"/>
+          </div>
+          <div class="form-group">
+            <label for="res-email">Email Address</label>
+            <input type="email" id="res-email" placeholder="your@email.com" autocomplete="email"/>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="res-phone">Phone Number</label>
+            <input type="tel" id="res-phone" placeholder="07700 000000" autocomplete="tel"/>
+          </div>
+          <div class="form-group">
+            <label for="res-guests">Number of Guests</label>
+            <select id="res-guests">
+              <option value="">Select guests</option>
+              <option>1</option><option>2</option><option>3</option>
+              <option>4</option><option>5</option><option>6</option>
+              <option>7</option><option value="8+">8+ (contact us)</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="res-date">Preferred Date</label>
+            <input type="date" id="res-date"/>
+          </div>
+          <div class="form-group">
+            <label for="res-time">Preferred Time</label>
+            <select id="res-time">
+              <option value="">Select time</option>
+              <option>12:00 PM</option><option>12:30 PM</option>
+              <option>1:00 PM</option><option>1:30 PM</option>
+              <option>5:30 PM</option><option>6:00 PM</option>
+              <option>6:30 PM</option><option>7:00 PM</option>
+              <option>7:30 PM</option><option>8:00 PM</option>
+              <option>8:30 PM</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="res-notes">Special Requests / Dietary Requirements</label>
+          <textarea id="res-notes" placeholder="Any allergies, dietary needs, or occasions we should know about..."></textarea>
+        </div>
+        <button class="btn btn-primary" style="width:100%;" onclick="submitReservation()">Request Reservation</button>
+        <div id="res-msg" role="alert">
+          ✅ Thank you! Your reservation request has been received. We'll confirm your booking within 2 hours by email.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== PAGE 8: CONTACT ========== -->
+<section id="page-contact" class="page-section">
+  <div class="section-wrap">
+    <div class="section-header">
+      <div class="eyebrow">Get in Touch</div>
+      <h2>Contact Us</h2>
+      <p>We'd love to hear from you. Whether it's a question, a private event enquiry, or you just want to say hello.</p>
+      <div class="gold-line"></div>
+    </div>
+    <div class="contact-grid">
+      <div>
+        <div class="contact-block">
+          <h4>📍 Address</h4>
+          <p>John's Bistro<br/>142 Lisburn Road<br/>Belfast, BT9 6AJ</p>
+        </div>
+        <div class="contact-block">
+          <h4>📞 Phone</h4>
+          <p><a href="tel:+442890123456">028 9012 3456</a></p>
+        </div>
+        <div class="contact-block">
+          <h4>✉️ Email</h4>
+          <p><a href="mailto:hello@johnsbistro.co.uk">hello@johnsbistro.co.uk</a></p>
+        </div>
+        <div class="contact-block">
+          <h4>🕐 Opening Hours</h4>
+          <p>Tuesday–Thursday: 12pm–10pm<br/>Friday–Saturday: 12pm–11pm<br/>Sunday: 12pm–4pm<br/>Monday: Closed</p>
+        </div>
+        <div class="contact-block">
+          <h4>🚌 Getting Here</h4>
+          <p>We are located on the Lisburn Road, easily accessible by bus from Belfast City Centre. The 8A and 8B buses stop right outside. Street parking is available on nearby side streets.</p>
+        </div>
+        <!-- External link (interactive feature) -->
+        <div class="contact-block">
+          <h4>🔗 Find Us Online</h4>
+          <p>
+            <a href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer" style="color:var(--red);">View on Google Maps ↗</a><br/>
+            <a href="https://www.tripadvisor.co.uk" target="_blank" rel="noopener noreferrer" style="color:var(--red);">Read Reviews on TripAdvisor ↗</a>
+          </p>
+        </div>
+      </div>
+      <div>
+        <div class="map-placeholder" role="img" aria-label="Map showing John's Bistro location on the Lisburn Road, Belfast">
+          🗺️
+          <p>142 Lisburn Road, Belfast BT9 6AJ</p>
+          <p style="font-size:0.8rem;color:#aaa;">Lisburn Road, South Belfast</p>
+        </div>
+        <div style="margin-top:28px;background:var(--white);padding:28px;border-radius:6px;">
+          <h3 style="font-family:var(--font-heading);margin-bottom:18px;font-size:1.3rem;">Send a Message</h3>
+          <div class="form-group"><label for="ct-name">Name</label><input type="text" id="ct-name" placeholder="Your name"/></div>
+          <div class="form-group"><label for="ct-email">Email</label><input type="email" id="ct-email" placeholder="your@email.com"/></div>
+          <div class="form-group"><label for="ct-msg">Message</label><textarea id="ct-msg" placeholder="How can we help you?"></textarea></div>
+          <button class="btn btn-primary" style="width:100%;" onclick="submitContact()">Send Message</button>
+          <div id="ct-msg-conf" style="display:none;margin-top:14px;padding:12px 18px;background:#eef7ee;border-left:4px solid #4caf50;color:#2e7d32;font-size:0.9rem;border-radius:3px;" role="alert">
+            ✅ Message sent! We'll get back to you within 24 hours.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== FOOTER ========== -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="foot-logo">John's <span>Bistro</span></div>
+      <p>Great food, good vibes, and a warm welcome on the Lisburn Road. Serving the people of Belfast since 2009.</p>
+    </div>
+    <div>
+      <h4>Navigate</h4>
+      <ul>
+        <li><a class="nav-link" data-page="home">Home</a></li>
+        <li><a class="nav-link" data-page="menu">Menu</a></li>
+        <li><a class="nav-link" data-page="specials">Specials</a></li>
+        <li><a class="nav-link" data-page="about">About</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Visit</h4>
+      <ul>
+        <li><a class="nav-link" data-page="gallery">Gallery</a></li>
+        <li><a class="nav-link" data-page="events">Events</a></li>
+        <li><a class="nav-link" data-page="reservations">Reservations</a></li>
+        <li><a class="nav-link" data-page="contact">Contact</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4>Contact</h4>
+      <ul>
+        <li><a href="tel:+442890123456">028 9012 3456</a></li>
+        <li><a href="mailto:hello@johnsbistro.co.uk">hello@johnsbistro.co.uk</a></li>
+        <li><a>142 Lisburn Road, Belfast</a></li>
+        <li><a>BT9 6AJ</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2024 John's Bistro Belfast. All rights reserved.</span>
+    <div class="socials">
+      <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook">📘</a>
+      <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram">📸</a>
+      <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Twitter">🐦</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ========== JAVASCRIPT ========== -->
+<script>
+  // ---- PAGE NAVIGATION ----
+  function showPage(pageId) {
+    document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+
+    const target = document.getElementById('page-' + pageId);
+    if (target) {
+      target.classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.querySelectorAll('.nav-link[data-page="' + pageId + '"]').forEach(l => l.classList.add('active'));
+
+    // Close mobile menu
+    document.getElementById('nav-links').classList.remove('open');
+  }
+
+  // Attach all nav links (including footer)
+  document.addEventListener('click', function(e) {
+    const link = e.target.closest('.nav-link');
+    if (link && link.dataset.page) {
+      e.preventDefault();
+      showPage(link.dataset.page);
+    }
+  });
+
+  // ---- MOBILE HAMBURGER MENU ----
+  function toggleMenu() {
+    document.getElementById('nav-links').classList.toggle('open');
+  }
+
+  // ---- MENU TABS ----
+  function switchTab(btn, catId) {
+    document.querySelectorAll('.menu-tab').forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected','false'); });
+    document.querySelectorAll('.menu-category').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    btn.setAttribute('aria-selected','true');
+    document.getElementById('cat-' + catId).classList.add('active');
+  }
+
+  // ---- GALLERY LIGHTBOX ----
+  function openLightbox(imgSrc, caption) {
+    document.getElementById('lb-img').src = imgSrc;
+    document.getElementById('lb-img').alt = caption;
+    document.getElementById('lb-caption').textContent = caption;
+    document.getElementById('lightbox').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  // Close lightbox on click outside content
+  document.getElementById('lightbox').addEventListener('click', function(e) {
+    if (e.target === this) closeLightbox();
+  });
+  // Keyboard close
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeLightbox();
+  });
+
+  // ---- RESERVATION FORM ----
+  function submitReservation() {
+    const name = document.getElementById('res-name').value.trim();
+    const email = document.getElementById('res-email').value.trim();
+    const guests = document.getElementById('res-guests').value;
+    const date = document.getElementById('res-date').value;
+    const time = document.getElementById('res-time').value;
+
+    if (!name || !email || !guests || !date || !time) {
+      alert('Please fill in all required fields (name, email, guests, date, and time).');
+      return;
+    }
+    document.getElementById('res-msg').style.display = 'block';
+    document.getElementById('res-name').value = '';
+    document.getElementById('res-email').value = '';
+    document.getElementById('res-phone').value = '';
+    document.getElementById('res-guests').value = '';
+    document.getElementById('res-date').value = '';
+    document.getElementById('res-time').value = '';
+    document.getElementById('res-notes').value = '';
+  }
+
+  // ---- CONTACT FORM ----
+  function submitContact() {
+    const name = document.getElementById('ct-name').value.trim();
+    const email = document.getElementById('ct-email').value.trim();
+    const msg = document.getElementById('ct-msg').value.trim();
+    if (!name || !email || !msg) {
+      alert('Please fill in all fields.');
+      return;
+    }
+    document.getElementById('ct-msg-conf').style.display = 'block';
+    document.getElementById('ct-name').value = '';
+    document.getElementById('ct-email').value = '';
+    document.getElementById('ct-msg').value = '';
+  }
+
+  // ---- JAVASCRIPT TEXT RESIZE (Accessibility) ----
+  let currentSize = 16; // base font size in px
+  function changeTextSize(direction) {
+    if (direction === 0) {
+      currentSize = 16;
+    } else {
+      currentSize = Math.min(26, Math.max(12, currentSize + (direction * 2)));
+    }
+    document.body.style.fontSize = currentSize + 'px';
+    const labels = { 12:'Small', 14:'Small', 16:'Normal', 18:'Large', 20:'Large', 22:'X-Large', 24:'X-Large', 26:'XX-Large' };
+    document.getElementById('size-label').textContent = 'Text size: ' + (labels[currentSize] || 'Custom');
+  }
+
+  // Set today's minimum date on reservation datepicker
+  const today = new Date().toISOString().split('T')[0];
+  const datePicker = document.getElementById('res-date');
+  if (datePicker) datePicker.setAttribute('min', today);
+</script>
+</body>
+</html>
